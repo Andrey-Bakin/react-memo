@@ -210,7 +210,9 @@ export function Cards({ pairsCount = 3, previewSeconds = 5 }) {
         </div>
         {status === STATUS_IN_PROGRESS ? (
           <>
-            <div>{isSimpleMode && `Количество попыток: ${tryes}`}</div>
+            <div>
+              <p className={styles.timerDescription}>{isSimpleMode && `Количество попыток: ${tryes}`}</p>
+            </div>
             <Button onClick={resetGame}>Начать заново</Button>
           </>
         ) : null}
