@@ -1,14 +1,28 @@
 import { Button } from "../../components/Button/Button";
-import { Link } from "react-router-dom"
-import styles from "./LeaderBoardPage.module.css"
-import cn from "classnames"
+import { Link } from "react-router-dom";
+import styles from "./LeaderBoardPage.module.css";
+import cn from "classnames";
+import { getLeaderList } from "../../components/api";
+import { useEffect, useState } from "react";
 
 export function LeaderBoardPage() {
-  const List = [
-    { id: 1, name: "Великий маг", time: 8 },
-    { id: 2, name: "Карточный мастер", time: 12 },
-    { id: 3, name: "Гениальный игрок", time: 31 },
-  ];
+  const [leaders, setLeaders] = useState([]);
+
+  useEffect(() => {
+    getLeaderList().then(data => {
+      setLeaders(data.leaders.sort((a, b) => (a.time > b.time ? 1 : -1)).slice(0, 10));
+    });
+  }, []);
+
+  function leaderTime(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    if (minutes === 0) {
+      return `${seconds} сек`;
+    } else {
+      return `${minutes} мин ${seconds} сек`;
+    }
+  }
 
   return (
     <>
@@ -25,11 +39,11 @@ export function LeaderBoardPage() {
             <div className={styles.name}>Пользователь</div>
             <div className={styles.time}>Время</div>
           </div>
-          {List.map(list => (
+          {leaders.map((list, index) => (
             <div className={cn(styles.listContent, styles.playerText)} key={list.id}>
-              <div className={styles.position}># {list.id}</div>
+              <div className={styles.position}># {index + 1}</div>
               <div className={styles.name}>{list.name}</div>
-              <div className={styles.time}>{list.time}</div>
+              <div className={styles.time}>{leaderTime(list.time)}</div>
             </div>
           ))}
         </div>

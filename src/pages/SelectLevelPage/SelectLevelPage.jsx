@@ -1,30 +1,29 @@
-import { Link } from "react-router-dom";
 import styles from "./SelectLevelPage.module.css";
 import Checkbox from "../../components/Checkbox/Checkbox";
 import { useGameMode } from "../../components/hooks/useGameMode";
-import { useState } from "react";
 import { Button } from "../../components/Button/Button";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import cn from "classnames";
 
 export function SelectLevelPage() {
-  const { setIsSimpleMode } = useGameMode();
-  const selectedGameMode = () => {
-    setIsSimpleMode(prevstate => !prevstate);
-    const [difficult, setDifficult] = useState({});
-    const selectDifficult = e => {
-      const { name, value } = e.target;
-      setDifficult({ ...difficult, [name]: value });
-    };
-    let number;
-    if (difficult.mode === "easy") {
-      number = 3;
-    }
-    if (difficult.mode === "middle") {
-      number = 6;
-    }
-    if (difficult.mode === "hard") {
-      number = 9;
-    }
+  const { setIsSimpleMode } = useGameMode(false);
+  const selectGameMode = () => setIsSimpleMode(prevstate => !prevstate);
+  const [difficult, setDifficult] = useState({});
+  const selectDifficult = e => {
+    const { name, value } = e.target;
+    setDifficult({ ...difficult, [name]: value });
   };
+  let number = 3;
+  if (difficult.mode === "easy") {
+    number = 3;
+  }
+  if (difficult.mode === "middle") {
+    number = 6;
+  }
+  if (difficult.mode === "hard") {
+    number = 9;
+  }
 
   return (
     <div className={styles.container}>
@@ -39,7 +38,7 @@ export function SelectLevelPage() {
             value="easy"
             onChange={selectDifficult}
           />
-          <li className={styles.level}>
+          <li className={cn(styles.level, { [styles.active]: number === 3 })}>
             <label className={styles.levelLink} htmlFor="radio1">
               1
             </label>
@@ -52,7 +51,7 @@ export function SelectLevelPage() {
             value="middle"
             onChange={selectDifficult}
           />
-          <li className={styles.level}>
+          <li className={cn(styles.level, { [styles.active]: number === 6 })}>
             <label className={styles.levelLink} htmlFor="radio2">
               2
             </label>
@@ -65,13 +64,13 @@ export function SelectLevelPage() {
             value="hard"
             onChange={selectDifficult}
           />
-          <li className={styles.level}>
+          <li className={cn(styles.level, { [styles.active]: number === 9 })}>
             <label className={styles.levelLink} htmlFor="radio3">
               3
             </label>
           </li>
         </ul>
-        <Checkbox id={"modeCheckbox"} name={"modeCheckbox"} label={"Игра до 3 ошибок"} onClick={selectedGameMode} />
+        <Checkbox id={"modeCheckbox"} name={"modeCheckbox"} label={"Игра до 3 ошибок"} onClick={selectGameMode} />
         <Link to={`/game/${number}`}>
           <Button>Играть</Button>
         </Link>
