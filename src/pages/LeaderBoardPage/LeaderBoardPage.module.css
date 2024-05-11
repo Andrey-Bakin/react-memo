@@ -75,10 +75,12 @@
   .name {
     width: 324px;
     margin-right: 240px;
+    font-family: "roboto";
   }
   
   .time {
     width: 160px;
+    font-family: "roboto";
   }
   
   .playerText {
