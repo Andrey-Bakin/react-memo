@@ -6,6 +6,7 @@ import { EndGameModal } from "../../components/EndGameModal/EndGameModal";
 import { Button } from "../../components/Button/Button";
 import { Card } from "../../components/Card/Card";
 import { useGameMode } from "../hooks/useGameMode";
+// import { getLeaderList } from "../api";
 
 // Игра закончилась
 const STATUS_LOST = "STATUS_LOST";
