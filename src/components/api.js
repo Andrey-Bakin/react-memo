@@ -11,12 +11,13 @@ export async function getLeaderList() {
   return data;
 }
 
-export async function postLeader({ nameUser, time }) {
+export async function postLeader({ nameUser, time, achievements }) {
   const response = await fetch(host, {
     method: "POST",
     body: JSON.stringify({
       name: nameUser.value,
       time: time,
+      achievements: achievements,
     }),
   });
 

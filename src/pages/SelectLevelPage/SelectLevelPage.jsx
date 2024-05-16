@@ -7,7 +7,8 @@ import { Link } from "react-router-dom";
 import cn from "classnames";
 
 export function SelectLevelPage() {
-  const { setIsSimpleMode } = useGameMode(false);
+  const { setIsSimpleMode } = useGameMode(true);
+  setIsSimpleMode(true);
   const selectGameMode = () => setIsSimpleMode(prevstate => !prevstate);
   const [difficult, setDifficult] = useState({});
   const selectDifficult = e => {

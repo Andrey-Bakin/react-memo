@@ -7,12 +7,17 @@ import celebrationImageUrl from "./images/celebration.png";
 import submitImageUrl from "./images/submit.png";
 import { Link, useParams } from "react-router-dom";
 import { postLeader } from "../api";
-// import { useGameMode } from "../hooks/useGameMode";
+import { useGameMode } from "../hooks/useGameMode";
 
-export function EndGameModal({ isWon, gameDurationSeconds, gameDurationMinutes, onClick }) {
+export function EndGameModal({ isWon, gameDurationSeconds, gameDurationMinutes, onClick, usedOnce }) {
   const { pairsCount } = useParams();
+  const { isSimpleMode } = useGameMode();
 
-  const isLeader = isWon && pairsCount === "9";
+  const hardLevelPairsNumber = 9;
+
+  const isLeader = isWon && Number(pairsCount) === hardLevelPairsNumber;
+
+  const hardPlayed = isLeader && isSimpleMode === false;
 
   const title = isLeader ? "Вы попали на лидерборд!" : isWon ? "Вы выйграли!" : "Вы проиграли!";
 
@@ -24,6 +29,16 @@ export function EndGameModal({ isWon, gameDurationSeconds, gameDurationMinutes, 
 
   const nameUser = document.getElementById("name-input");
 
+  let achievements = [];
+
+  if (hardPlayed) {
+    achievements.unshift(1);
+  }
+
+  if (usedOnce === true) {
+    achievements.push(2);
+  }
+
   const time = `${gameDurationMinutes.toString().padStart("2", "0")}.${gameDurationSeconds
     .toString()
     .padStart("2", "0")}`;
@@ -33,6 +48,7 @@ export function EndGameModal({ isWon, gameDurationSeconds, gameDurationMinutes, 
     postLeader({
       nameUser,
       time: timeToBoard,
+      achievements: achievements,
     });
   };
 

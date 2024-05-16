@@ -6,7 +6,10 @@ import { EndGameModal } from "../../components/EndGameModal/EndGameModal";
 import { Button } from "../../components/Button/Button";
 import { Card } from "../../components/Card/Card";
 import { useGameMode } from "../hooks/useGameMode";
-// import { getLeaderList } from "../api";
+import alohomoraImageUrl from "./images/alohomora.png";
+import cn from "classnames";
+
+const alohomoraImage = alohomoraImageUrl;
 
 // Игра закончилась
 const STATUS_LOST = "STATUS_LOST";
@@ -62,6 +65,29 @@ export function Cards({ pairsCount = 3, previewSeconds = 5 }) {
   const { isSimpleMode } = useGameMode();
   const [tryes, setTryes] = useState(isSimpleMode ? 3 : 1);
 
+  // Алахамора
+  const [usedAlohomora, setUsedAlohomora] = useState(false);
+  const [usedOnce, setUsedOnce] = useState(false);
+  const [lastCard, setLastCard] = useState(false);
+
+  function useAlohomora() {
+    setUsedAlohomora(true);
+  }
+
+  useEffect(() => {
+    if (usedAlohomora && !usedOnce) {
+      const notOpenedCards = cards.filter(card => !card.open);
+      const randomCard = notOpenedCards[Math.floor(Math.random() * notOpenedCards.length)];
+      const randomPair = notOpenedCards.filter(
+        sameCards => randomCard.suit === sameCards.suit && randomCard.rank === sameCards.rank,
+      );
+
+      randomPair[1].open = true;
+      randomPair[0].open = true;
+      setUsedOnce(true);
+    }
+  }, [cards, usedAlohomora, usedOnce]);
+
   function finishGame(status = STATUS_LOST) {
     setGameEndDate(new Date());
     setStatus(status);
@@ -75,6 +101,9 @@ export function Cards({ pairsCount = 3, previewSeconds = 5 }) {
   }
   function resetGame() {
     setTryes(isSimpleMode ? 3 : 1);
+    setLastCard(false);
+    setUsedAlohomora(false);
+    setUsedOnce(false);
     setGameStartDate(null);
     setGameEndDate(null);
     setTimer(getTimerValue(null, null));
@@ -135,6 +164,9 @@ export function Cards({ pairsCount = 3, previewSeconds = 5 }) {
         openCardsWithoutPair[0].open = false;
       }, 1000);
       setTryes(tryes - 1);
+    }
+    if (cards.filter(card => !card.open).length === 2) {
+      setLastCard(true);
     }
 
     // ... игра продолжается
@@ -211,6 +243,15 @@ export function Cards({ pairsCount = 3, previewSeconds = 5 }) {
         </div>
         {status === STATUS_IN_PROGRESS ? (
           <>
+            <div className={styles.alohomoraContent}>
+              <div
+                onClick={useAlohomora}
+                className={cn(styles.alohomoraBack, { [styles.notActive]: usedAlohomora || lastCard })}
+              >
+                <img className={styles.alohomoraImg} src={alohomoraImage} alt="alohomora" />
+              </div>
+              <div className={styles.alohomoraText}>"Алохомора" - открывает случайную пару карт</div>
+            </div>
             <div>
               <p className={styles.timerDescription}>{isSimpleMode && `Количество попыток: ${tryes}`}</p>
             </div>
@@ -234,6 +275,7 @@ export function Cards({ pairsCount = 3, previewSeconds = 5 }) {
       {isGameEnded ? (
         <div className={styles.modalContainer}>
           <EndGameModal
+            usedOnce={usedOnce}
             isWon={status === STATUS_WON}
             gameDurationSeconds={timer.seconds}
             gameDurationMinutes={timer.minutes}
